@@ -1,7 +1,7 @@
-import { GraphQLFloat, GraphQLList, GraphQLObjectType, GraphQLString } from 'graphql';
+import { GraphQLFloat, GraphQLObjectType, GraphQLString } from 'graphql';
 import { UUIDType } from './uuid.js';
-import { PostType } from './post.js';
-import { ProfileType } from './profile.js';
+import { Post } from './post.js';
+import { Profile } from './profile.js';
 
 // model User {
 //   id      String @id @default(uuid())
@@ -13,16 +13,21 @@ import { ProfileType } from './profile.js';
 //   subscribedToUser SubscribersOnAuthors[] @relation("author")
 // }
 
+export interface User {
+  id: string,
+  name: string,
+  balance: number,
+  profile: Profile,
+  posts: Post[],
+  // userSubscribedTo:
+  // subscribedToUser:
+}
+
 export const UserType = new GraphQLObjectType({
   name: 'User',
-  fields: () => ({
+  fields: {
     id: { type: UUIDType },
     name: { type: GraphQLString },
     balance: { type: GraphQLFloat },
-    // posts: { type: new GraphQLList(PostType) },
-    // profile: {
-    //   type: ProfileType,
-    //   resolve: (v) => console.log(v),
-    // },
-  }),
+  }
 });

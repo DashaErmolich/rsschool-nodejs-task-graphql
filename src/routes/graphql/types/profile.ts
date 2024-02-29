@@ -1,6 +1,7 @@
 import { GraphQLBoolean, GraphQLInt, GraphQLObjectType, GraphQLString } from 'graphql';
 import { UUIDType } from './uuid.js';
-import { UserType } from './user.js';
+import { User } from './user.js';
+import { MemberType } from './member-type.js';
 
 // model Profile {
 //   id          String  @id @default(uuid())
@@ -12,6 +13,16 @@ import { UserType } from './user.js';
 //   memberTypeId String
 // }
 
+export interface Profile {
+  id: string,
+  isMale: boolean,
+  yearOfBirth: number,
+  user: User,
+  userId: string,
+  memberType: MemberType,
+  memberTypeId: string,
+}
+
 export const ProfileType = new GraphQLObjectType({
   name: 'Profile',
   fields: () => ({
@@ -20,9 +31,5 @@ export const ProfileType = new GraphQLObjectType({
     yearOfBirth: { type: GraphQLInt },
     userId: { type: UUIDType },
     memberTypeId: { type: GraphQLString },
-    user: { 
-      type: UserType,
-      resolve: (v) => console.log(v),
-    },
   }),
 });
