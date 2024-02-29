@@ -1,4 +1,10 @@
-import { GraphQLBoolean, GraphQLInt, GraphQLObjectType } from 'graphql';
+import {
+  GraphQLBoolean,
+  GraphQLInputObjectType,
+  GraphQLInt,
+  GraphQLNonNull,
+  GraphQLObjectType,
+} from 'graphql';
 import { UUIDType } from './uuid.type.js';
 import { UserType } from './user.type.js';
 import { Profile } from '../models/profile.model.js';
@@ -33,10 +39,22 @@ export const ProfileType: GraphQLObjectType<Profile, Context> = new GraphQLObjec
     memberType: {
       type: MemberTypeType,
       resolve: async ({ memberTypeId }, _args, { dataClient }, _info) => {
-        const data = await dataClient.memberType.findFirst({ where: { id: memberTypeId } });
+        const data = await dataClient.memberType.findFirst({
+          where: { id: memberTypeId },
+        });
         return data;
       },
     },
     memberTypeId: { type: MemberTypeId },
+  }),
+});
+
+export const CreateProfileInputType = new GraphQLInputObjectType({
+  name: 'CreateProfileInput',
+  fields: () => ({
+    userId: { type: new GraphQLNonNull(UUIDType) },
+    memberTypeId: { type: new GraphQLNonNull(MemberTypeId) },
+    isMale: { type: new GraphQLNonNull(GraphQLBoolean) },
+    yearOfBirth: { type: new GraphQLNonNull(GraphQLInt) },
   }),
 });

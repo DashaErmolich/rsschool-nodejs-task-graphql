@@ -1,6 +1,5 @@
-import { MemberType } from "./member-type.model.js";
-import { User } from "./user.model.js";
-
+import { MemberType } from './member-type.model.js';
+import { User } from './user.model.js';
 
 export interface Profile {
   id: string;
@@ -11,3 +10,8 @@ export interface Profile {
   memberType: MemberType;
   memberTypeId: string;
 }
+
+export type CreateProfileInputDto = Pick<
+  Profile,
+  'userId' | 'memberTypeId' | 'isMale' | 'yearOfBirth'
+>;

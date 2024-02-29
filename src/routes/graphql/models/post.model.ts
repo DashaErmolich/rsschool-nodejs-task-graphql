@@ -7,3 +7,5 @@ export interface Post {
   author: User;
   authorId: string;
 }
+
+export type CreatePostInputDto = Pick<Post, 'content' | 'title'| 'authorId'>

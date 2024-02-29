@@ -12,3 +12,8 @@ export interface User {
   // userSubscribedTo:
   // subscribedToUser:
 }
+
+export type CreateUserInputDto = Pick<
+  User,
+  'name' | 'balance'
+>;

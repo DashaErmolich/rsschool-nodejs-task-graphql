@@ -1,14 +1,14 @@
 import { GraphQLList, GraphQLObjectType } from 'graphql';
-import { UserType } from './user.type.js';
+import { UserType } from '../user.type.js';
 import { Post } from '@prisma/client';
-import { PostType } from './post.type.js';
-import { MemberTypeType } from './member-type.type.js';
-import { ProfileType } from './profile.type.js';
-import { Context } from '../models/context.model.js';
-import { UUIDType } from './uuid.type.js';
-import { MemberTypeId } from '../enums/member-type.enum.js';
-import { User } from '../models/user.model.js';
-import { Profile } from '../models/profile.model.js';
+import { PostType } from '../post.type.js';
+import { MemberTypeType } from '../member-type.type.js';
+import { ProfileType } from '../profile.type.js';
+import { Context } from '../../models/context.model.js';
+import { UUIDType } from '../uuid.type.js';
+import { MemberTypeId } from '../../enums/member-type.enum.js';
+import { User } from '../../models/user.model.js';
+import { Profile } from '../../models/profile.model.js';
 
 export const QueryType: GraphQLObjectType<unknown, Context> = new GraphQLObjectType({
   name: 'Query',
