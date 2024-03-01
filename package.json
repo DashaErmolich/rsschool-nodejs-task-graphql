@@ -16,9 +16,9 @@
   },
   "scripts": {
     "test-integrity": "node integrity.cjs",
-    "test-queries": "npm run build:ts && tap --timeout=0 --ts \"test/routes/gql-queries.test.ts\"",
-    "test-mutations": "npm run build:ts && tap --timeout=0 --ts \"test/routes/gql-mutations.test.ts\"",
-    "test-rule": "npm run build:ts && tap --timeout=0 --ts \"test/routes/gql-rule.test.ts\"",
+    "test-queries": "npm run build:ts && tap --ts \"test/routes/gql-queries.test.ts\"",
+    "test-mutations": "npm run build:ts && tap --ts \"test/routes/gql-mutations.test.ts\"",
+    "test-rule": "npm run build:ts && tap --ts \"test/routes/gql-rule.test.ts\"",
     "test-loader": "npm run build:ts && tap --ts \"test/routes/gql-loader.test.ts\"",
     "test-loader-prime": "npm run build:ts && tap --ts \"test/routes/gql-loader-prime.test.ts\"",
     "start": "npm run build:ts && fastify start -l info dist/app.js",
@@ -63,7 +63,9 @@
     "prisma": "^5.0.0",
     "tap": "^16.1.0",
     "ts-node": "^10.4.0",
-    "typescript": "^5.0.0",
+    "typescript": "^5.0.0"
+  },
+  "peerDependencies": {
     "@sinclair/typebox": "^0.28.20"
   },
   "tap": {
