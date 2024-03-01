@@ -9,8 +9,6 @@ export interface User {
   balance: number;
   profile: Profile;
   posts: Post[];
-  // userSubscribedTo:
-  // subscribedToUser:
 }
 
 export type CreateUserInputDto = Pick<
@@ -21,4 +19,9 @@ export type CreateUserInputDto = Pick<
 export type ChangeUserInputDto = {
   id: string,
   dto: CreateUserInputDto,
+}
+
+export interface userSubscribedTo {
+  userId: string,
+  authorId: string,
 }

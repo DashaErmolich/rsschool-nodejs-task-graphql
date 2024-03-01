@@ -12,7 +12,12 @@ import {
   CreateProfileInputDto,
   Profile,
 } from '../../models/profile.model.js';
-import { ChangeUserInputDto, CreateUserInputDto, User } from '../../models/user.model.js';
+import {
+  ChangeUserInputDto,
+  CreateUserInputDto,
+  User,
+  userSubscribedTo,
+} from '../../models/user.model.js';
 import { ChangePostInputDto, CreatePostInputDto, Post } from '../../models/post.model.js';
 import { UUIDType } from '../uuid.type.js';
 
@@ -129,6 +134,40 @@ export const MutationType: GraphQLObjectType<unknown, Context> = new GraphQLObje
         _info,
       ) => {
         return await dataClient.profile.update({ where: { id: profileId }, data: dto });
+      },
+    },
+    subscribeTo: {
+      type: UserType,
+      args: { userId: { type: UUIDType }, authorId: { type: UUIDType } },
+      resolve: async (
+        _source,
+        { userId: subscriberId, authorId }: userSubscribedTo,
+        { dataClient },
+        _info,
+      ) => {
+        await dataClient.subscribersOnAuthors.create({
+          data: { subscriberId, authorId },
+        });
+        return await dataClient.user.findFirst({ where: { id: subscriberId } });
+      },
+    },
+    unsubscribeFrom: {
+      type: GraphQLBoolean,
+      args: { userId: { type: UUIDType }, authorId: { type: UUIDType } },
+      resolve: async (
+        _source,
+        { userId: subscriberId, authorId }: userSubscribedTo,
+        { dataClient },
+        _info,
+      ) => {
+        try {
+          await dataClient.subscribersOnAuthors.deleteMany({
+            where: { subscriberId, authorId },
+          });
+          return true;
+        } catch {
+          return false;
+        }
       },
     },
   }),

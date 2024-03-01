@@ -18,5 +18,5 @@ export type CreateProfileInputDto = Pick<
 
 export type ChangeProfileInputDto = {
   id: string,
-  dto: CreateProfileInputDto,
+  dto: Omit<CreateProfileInputDto, 'userId'>,
 }
