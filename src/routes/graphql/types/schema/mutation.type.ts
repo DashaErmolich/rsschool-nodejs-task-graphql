@@ -1,27 +1,37 @@
 import { GraphQLBoolean, GraphQLObjectType } from 'graphql';
-import { CreatePostInputType, PostType } from '../post.type.js';
+import { ChangePostInputType, CreatePostInputType, PostType } from '../post.type.js';
 import { Context } from '../../models/context.model.js';
-import { CreateUserInputType, UserType } from '../user.type.js';
-import { CreateProfileInputType, ProfileType } from '../profile.type.js';
-import { CreateProfileInputDto, Profile } from '../../models/profile.model.js';
-import { CreateUserInputDto, User } from '../../models/user.model.js';
-import { CreatePostInputDto, Post } from '../../models/post.model.js';
+import { ChangeUserInputType, CreateUserInputType, UserType } from '../user.type.js';
+import {
+  ChangeProfileInputType,
+  CreateProfileInputType,
+  ProfileType,
+} from '../profile.type.js';
+import {
+  ChangeProfileInputDto,
+  CreateProfileInputDto,
+  Profile,
+} from '../../models/profile.model.js';
+import { ChangeUserInputDto, CreateUserInputDto, User } from '../../models/user.model.js';
+import { ChangePostInputDto, CreatePostInputDto, Post } from '../../models/post.model.js';
 import { UUIDType } from '../uuid.type.js';
 
 interface MutationData<T> {
   dto: T;
 }
 
-export const MutationType: GraphQLObjectType<
-  unknown,
-  Context
-> = new GraphQLObjectType({
+export const MutationType: GraphQLObjectType<unknown, Context> = new GraphQLObjectType({
   name: 'Mutation',
   fields: () => ({
     createPost: {
       type: PostType,
       args: { dto: { type: CreatePostInputType } },
-      resolve: async (_source, { dto }: MutationData<CreatePostInputDto>, { dataClient }, _info) => {
+      resolve: async (
+        _source,
+        { dto }: MutationData<CreatePostInputDto>,
+        { dataClient },
+        _info,
+      ) => {
         return await dataClient.post.create({ data: dto });
       },
     },
@@ -34,13 +44,30 @@ export const MutationType: GraphQLObjectType<
           return true;
         } catch {
           return false;
-        } 
+        }
+      },
+    },
+    changePost: {
+      type: PostType,
+      args: { id: { type: UUIDType }, dto: { type: ChangePostInputType } },
+      resolve: async (
+        _source,
+        { id: postId, dto }: ChangePostInputDto,
+        { dataClient },
+        _info,
+      ) => {
+        return await dataClient.post.update({ where: { id: postId }, data: dto });
       },
     },
     createUser: {
       type: UserType,
       args: { dto: { type: CreateUserInputType } },
-      resolve: async (_source, { dto }: MutationData<CreateUserInputDto>, { dataClient }, _info) => {
+      resolve: async (
+        _source,
+        { dto }: MutationData<CreateUserInputDto>,
+        { dataClient },
+        _info,
+      ) => {
         return await dataClient.user.create({ data: dto });
       },
     },
@@ -56,10 +83,27 @@ export const MutationType: GraphQLObjectType<
         }
       },
     },
+    changeUser: {
+      type: UserType,
+      args: { id: { type: UUIDType }, dto: { type: ChangeUserInputType } },
+      resolve: async (
+        _source,
+        { id: userId, dto }: ChangeUserInputDto,
+        { dataClient },
+        _info,
+      ) => {
+        return await dataClient.user.update({ where: { id: userId }, data: dto });
+      },
+    },
     createProfile: {
       type: ProfileType,
       args: { dto: { type: CreateProfileInputType } },
-      resolve: async (_source, { dto }: MutationData<CreateProfileInputDto>, { dataClient }, _info) => {
+      resolve: async (
+        _source,
+        { dto }: MutationData<CreateProfileInputDto>,
+        { dataClient },
+        _info,
+      ) => {
         return await dataClient.profile.create({ data: dto });
       },
     },
@@ -73,6 +117,18 @@ export const MutationType: GraphQLObjectType<
         } catch {
           return false;
         }
+      },
+    },
+    changeProfile: {
+      type: ProfileType,
+      args: { id: { type: UUIDType }, dto: { type: ChangeProfileInputType } },
+      resolve: async (
+        _source,
+        { id: profileId, dto }: ChangeProfileInputDto,
+        { dataClient },
+        _info,
+      ) => {
+        return await dataClient.profile.update({ where: { id: profileId }, data: dto });
       },
     },
   }),

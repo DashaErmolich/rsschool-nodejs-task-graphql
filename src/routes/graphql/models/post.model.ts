@@ -9,3 +9,8 @@ export interface Post {
 }
 
 export type CreatePostInputDto = Pick<Post, 'content' | 'title'| 'authorId'>
+
+export type ChangePostInputDto = {
+  id: string,
+  dto: CreatePostInputDto,
+}

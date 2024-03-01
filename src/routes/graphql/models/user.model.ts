@@ -17,3 +17,8 @@ export type CreateUserInputDto = Pick<
   User,
   'name' | 'balance'
 >;
+
+export type ChangeUserInputDto = {
+  id: string,
+  dto: CreateUserInputDto,
+}

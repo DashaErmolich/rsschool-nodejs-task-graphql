@@ -15,3 +15,8 @@ export type CreateProfileInputDto = Pick<
   Profile,
   'userId' | 'memberTypeId' | 'isMale' | 'yearOfBirth'
 >;
+
+export type ChangeProfileInputDto = {
+  id: string,
+  dto: CreateProfileInputDto,
+}
