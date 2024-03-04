@@ -11,6 +11,12 @@ import { PostType } from './post.type.js';
 import { ProfileType } from './profile.type.js';
 import { Context } from '../models/context.model.js';
 import { User } from '../models/user.model.js';
+import DataLoader from 'dataloader';
+import {
+  ResolveTree,
+  parseResolveInfo,
+  simplifyParsedResolveInfoFragmentWithType,
+} from 'graphql-parse-resolve-info';
 
 // model User {
 //   id      String @id @default(uuid())
@@ -30,9 +36,23 @@ export const UserType: GraphQLObjectType<User, Context> = new GraphQLObjectType(
     balance: { type: GraphQLFloat },
     profile: {
       type: ProfileType,
-      resolve: async ({ id }, _args, { dataClient }, _info) => {
-        const data = await dataClient.profile.findFirst({ where: { userId: id } });
-        return data;
+      resolve: async ({ id }, _args, { dataClient, dataLoaders }, info) => {
+        // const data = await dataClient.profile.findFirst({ where: { userId: id } });
+        // return data;
+
+        let dl = dataLoaders.get(info.fieldNodes);
+        if (!dl) {
+          dl = new DataLoader(async (ids: readonly string[]) => {
+            const results = await dataClient.profile.findMany({
+              where: { userId: { in: ids as string[] } },
+            });
+            const sortedInIdsOrder = ids.map((id) => results.find((x) => x.id === id));
+            return sortedInIdsOrder;
+          });
+          dataLoaders.set(info.fieldNodes, dl);
+          console.log(dataLoaders);
+        }
+        return dl.load(id);
       },
     },
     posts: {

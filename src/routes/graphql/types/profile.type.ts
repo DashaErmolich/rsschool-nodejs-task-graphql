@@ -11,6 +11,7 @@ import { Profile } from '../models/profile.model.js';
 import { Context } from '../models/context.model.js';
 import { MemberTypeType } from './member-type.type.js';
 import { MemberTypeId } from '../enums/member-type.enum.js';
+import DataLoader from 'dataloader';
 
 // model Profile {
 //   id          String  @id @default(uuid())
@@ -30,19 +31,46 @@ export const ProfileType: GraphQLObjectType<Profile, Context> = new GraphQLObjec
     yearOfBirth: { type: GraphQLInt },
     user: {
       type: UserType,
-      resolve: async ({ userId }, _args, { dataClient }, _info) => {
-        const data = await dataClient.user.findFirst({ where: { id: userId } });
-        return data;
+      resolve: async ({ userId }, _args, { dataClient, dataLoaders }, info) => {
+        //   const data = await dataClient.user.findFirst({ where: { id: userId } });
+        //   return data;
+        // },
+        let dl = dataLoaders.get(info.fieldNodes);
+        if (!dl) {
+          dl = new DataLoader(async (ids: readonly string[]) => {
+            const results =  await dataClient.user.findMany({
+              where: { id: { in: ids as string[] } },
+            });
+            const sortedInIdsOrder = ids.map(id => results.find(x => x.id === id));
+            return sortedInIdsOrder;
+          });
+          dataLoaders.set(info.fieldNodes, dl);
+          console.log(dataLoaders);
+        }
+        return dl.load(userId);
       },
     },
     userId: { type: UUIDType },
     memberType: {
       type: MemberTypeType,
-      resolve: async ({ memberTypeId }, _args, { dataClient }, _info) => {
-        const data = await dataClient.memberType.findFirst({
-          where: { id: memberTypeId },
-        });
-        return data;
+      resolve: async ({ memberTypeId }, _args, { dataClient, dataLoaders }, info) => {
+        // const data = await dataClient.memberType.findFirst({
+        //   where: { id: memberTypeId },
+        // });
+        // return data;
+        let dl = dataLoaders.get(info.fieldNodes);
+        if (!dl) {
+          dl = new DataLoader(async (ids: readonly string[]) => {
+            const results = await dataClient.memberType.findMany({
+              where: { id: { in: ids as string[] } },
+            });
+            const sortedInIdsOrder = ids.map(id => results.find(x => x.id === id));
+            return sortedInIdsOrder;
+          });
+          dataLoaders.set(info.fieldNodes, dl);
+          console.log(dataLoaders);
+        }
+        return dl.load(memberTypeId);
       },
     },
     memberTypeId: { type: MemberTypeId },

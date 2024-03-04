@@ -1,6 +1,6 @@
 import { GraphQLList, GraphQLObjectType } from 'graphql';
 import { UserType } from '../user.type.js';
-import { Post } from '@prisma/client';
+import { MemberType, Post } from '@prisma/client';
 import { PostType } from '../post.type.js';
 import { MemberTypeType } from '../member-type.type.js';
 import { ProfileType } from '../profile.type.js';
@@ -9,6 +9,7 @@ import { UUIDType } from '../uuid.type.js';
 import { MemberTypeId } from '../../enums/member-type.enum.js';
 import { User } from '../../models/user.model.js';
 import { Profile } from '../../models/profile.model.js';
+import DataLoader from 'dataloader';
 
 export const QueryType: GraphQLObjectType<unknown, Context> = new GraphQLObjectType({
   name: 'Query',
@@ -29,9 +30,20 @@ export const QueryType: GraphQLObjectType<unknown, Context> = new GraphQLObjectT
           type: MemberTypeId,
         },
       },
-      resolve: async (_source, { id: postId }: Post, { dataClient }, _info) => {
-        const data = await dataClient.memberType.findFirst({ where: { id: postId } });
-        return data;
+      resolve: async (_source, { id: memberTypeId }: MemberType, { dataClient, dataLoaders }, info) => {
+        // const data = await dataClient.memberType.findFirst({ where: { id: memberTypeId } });
+        // return data;
+
+        let dl = dataLoaders.get(info.fieldNodes);
+        if (!dl) {
+          dl = new DataLoader(async (ids: readonly string[]) => {
+            const results = await dataClient.memberType.findMany({ where: { id: { in: ids as string[] } } });
+            const sortedInIdsOrder = ids.map(id => results.find(x => x.id === id));
+            return sortedInIdsOrder;
+          });
+          dataLoaders.set(info.fieldNodes, dl);
+        }
+        return dl.load(memberTypeId);
       },
     },
 
@@ -50,9 +62,20 @@ export const QueryType: GraphQLObjectType<unknown, Context> = new GraphQLObjectT
           type: UUIDType,
         },
       },
-      resolve: async (_source, { id: profileId }: Profile, { dataClient }, _info) => {
-        const data = await dataClient.profile.findFirst({ where: { id: profileId } });
-        return data;
+      resolve: async (_source, { id: profileId }: Profile, { dataClient, dataLoaders }, info) => {
+        // const data = await dataClient.profile.findFirst({ where: { id: profileId } });
+        // return data;
+
+        let dl = dataLoaders.get(info.fieldNodes);
+        if (!dl) {
+          dl = new DataLoader(async (ids: readonly string[]) => {
+            const results = await dataClient.profile.findMany({ where: { id: { in: ids as string[] } } });
+            const sortedInIdsOrder = ids.map(id => results.find(x => x.id === id));
+            return sortedInIdsOrder;
+          });
+          dataLoaders.set(info.fieldNodes, dl);
+        }
+        return dl.load(profileId);
       },
     },
 
@@ -71,9 +94,19 @@ export const QueryType: GraphQLObjectType<unknown, Context> = new GraphQLObjectT
           type: UUIDType,
         },
       },
-      resolve: async (_source, { id: postId }: Post, { dataClient }, _info) => {
-        const data = await dataClient.post.findFirst({ where: { id: postId } });
-        return data;
+      resolve: async (_source, { id: postId }: Post, { dataClient, dataLoaders }, info) => {
+        // const data = await dataClient.post.findFirst({ where: { id: postId } });
+        // return data;
+        let dl = dataLoaders.get(info.fieldNodes);
+        if (!dl) {
+          dl = new DataLoader(async (ids: readonly string[]) => {
+            const results = await dataClient.post.findMany({ where: { id: { in: ids as string[] } } });
+            const sortedInIdsOrder = ids.map(id => results.find(x => x.id === id));
+            return sortedInIdsOrder;
+          });
+          dataLoaders.set(info.fieldNodes, dl);
+        }
+        return dl.load(postId);
       },
     },
 
@@ -92,9 +125,19 @@ export const QueryType: GraphQLObjectType<unknown, Context> = new GraphQLObjectT
           type: UUIDType,
         },
       },
-      resolve: async (_source, { id: userId }: User, { dataClient }, _info) => {
-        const data = await dataClient.user.findFirst({ where: { id: userId } });
-        return data;
+      resolve: async (_source, { id: userId }: User, { dataClient, dataLoaders }, info) => {
+        // const data = await dataClient.user.findFirst({ where: { id: userId } });
+        // return data;
+        let dl = dataLoaders.get(info.fieldNodes);
+        if (!dl) {
+          dl = new DataLoader(async (ids: readonly string[]) => {
+            const results = await dataClient.user.findMany({ where: { id: { in: ids as string[] } } });
+            const sortedInIdsOrder = ids.map(id => results.find(x => x.id === id));
+            return sortedInIdsOrder;
+          });
+          dataLoaders.set(info.fieldNodes, dl);
+        }
+        return dl.load(userId);
       },
     },
   }),

@@ -22,6 +22,7 @@ const plugin: FastifyPluginAsyncTypebox = async (fastify) => {
     async handler(req) {
       const context: Context = {
         dataClient: prisma,
+        dataLoaders: new WeakMap(),
       };
 
       const depthErrors = validate(gqlSchema, parse(req.body.query), [

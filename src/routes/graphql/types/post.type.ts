@@ -8,6 +8,7 @@ import { UUIDType } from './uuid.type.js';
 import { UserType } from './user.type.js';
 import { Post } from '../models/post.model.js';
 import { Context } from '../models/context.model.js';
+import DataLoader from 'dataloader';
 
 // model Post {
 //   id      String @id @default(uuid())
@@ -25,9 +26,22 @@ export const PostType: GraphQLObjectType<Post, Context> = new GraphQLObjectType(
     content: { type: GraphQLString },
     author: {
       type: UserType,
-      resolve: async ({ authorId }, _args, { dataClient }, _info) => {
-        const data = await dataClient.user.findFirst({ where: { id: authorId } });
-        return data;
+      resolve: async ({ authorId }, _args, { dataClient, dataLoaders }, info) => {
+        // const data = await dataClient.user.findFirst({ where: { id: authorId } });
+        // return data;
+        let dl = dataLoaders.get(info.fieldNodes);
+        if (!dl) {
+          dl = new DataLoader(async (ids: readonly string[]) => {
+            const results = await dataClient.user.findMany({
+              where: { id: { in: ids as string[] } },
+            });
+            const sortedInIdsOrder = ids.map(id => results.find(x => x.id === id));
+            return sortedInIdsOrder;
+          });
+          dataLoaders.set(info.fieldNodes, dl);
+          console.log(dataLoaders);
+        }
+        return dl.load(authorId);
       },
     },
     authorId: { type: UUIDType },
